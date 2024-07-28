@@ -1,0 +1,43 @@
+/*
+ * Author : BASSAM_MAHMOUD_
+ * Layer  : HAL
+ * SWC    : KPD
+ * Version: 1.0
+ * Created: JUN/11/2024
+ */
+
+#ifndef KPD_CONFIG_H_
+#define KPD_CONFIG_H_
+
+/*SET KEYPAD RETURN VALUES:
+ */
+#define KPD_ARR_VAL					{'7','8','9','/'},{'4','5','6','*'},{'1','2','3','-'},{'C','0','=','+'}
+
+/*SET KEYPAD DIMENSIONS(MAXIMUM 4 COLUMNS, 4 ROWS):
+ */
+#define COLS_NUM					4
+#define ROWS_NUM					4
+
+/*SET KEYPAD COLUMNS PINS:
+ *OPTIONS,							PORT,PIN_NUMBER	
+ *									NULL IF NOT USED
+ */
+#define KPD_COL0_PIN				GPIO_u8PORTC,0
+#define KPD_COL1_PIN				GPIO_u8PORTC,1
+#define KPD_COL2_PIN				GPIO_u8PORTC,2
+#define KPD_COL3_PIN				GPIO_u8PORTC,3
+
+/*SET KEYPAD COLUMNS PINS:
+ *OPTIONS,							PORT,PIN_NUMBER	
+ *									NULL IF NOT USED
+ */
+#define KPD_ROW0_PIN				GPIO_u8PORTC,4
+#define KPD_ROW1_PIN				GPIO_u8PORTC,5
+#define KPD_ROW2_PIN				GPIO_u8PORTC,6
+#define KPD_ROW3_PIN				GPIO_u8PORTC,7
+
+/*NOTE: COLUMNS MUST BE CONNECTED TO INTIALLY HIGH OUTPUT PINS TO MC
+ *		ROWS MUST BE CONNECTED TO INPUT PULLED UP PINS TO MC
+ */
+ 
+#endif

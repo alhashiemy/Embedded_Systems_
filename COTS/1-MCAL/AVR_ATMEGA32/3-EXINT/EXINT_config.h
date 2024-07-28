@@ -1,0 +1,25 @@
+/*
+ * Author : BASSAM_MAHMOUD_
+ * Layer  : MCAL
+ * SWC    : EXINT
+ * Version: 1.0
+ * Created: JUN/15/2024
+ */
+
+#ifndef EXINT_CONFIG_H_
+#define EXINT_CONFIG_H_
+
+/*CHOOSE INT0|INT1 SENSE CONTROL:	LOW_LEVEL
+ *									LOGICAL_CHANGE
+ *									FALLING_EDGE
+ *									RISING_EDGE 
+ */
+#define EXINT0_SENSE				RISING_EDGE
+#define EXINT1_SENSE				FALLING_EDGE
+
+/*CHOOSE INT2 SENSE CONTORL:		FALLING_EDGE
+ *									RISING_EDGE
+ */
+#define EXINT2_SENSE				FALLING_EDGE
+
+#endif

@@ -1,0 +1,29 @@
+/*
+ * Author : BASSAM_MAHMOUD_
+ * Layer  : MCAl
+ * SWC    : ADC
+ * Version: 1.0
+ * Created: JUN/18/2024
+ */	
+
+#ifndef ADC_CONFIG_H_
+#define ADC_CONFIG_H_
+
+/*CHOOSE THE REFERANCE SELECTION:	AREF	
+ *									AVCC	
+ *									INTERN
+ */
+#define ADC_REF_SELECTION			AVCC
+
+/*CHOOSE LEFT ADJUST:				TEN_BIT_RESOLUTION
+ *									EIGHT_BIT_RESOLUTION	
+ */
+#define ADC_RESOLUTION				EIGHT_BIT_RESOLUTION
+
+/*CHOOSE PRESCALER:					ADC_PRESCALERNUM		
+ */
+#define ADC_PRESCALER				PRESCALER128
+
+#define MAX_BUSY_WAITING			5000
+
+#endif
