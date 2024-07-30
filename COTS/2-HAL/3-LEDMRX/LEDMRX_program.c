@@ -1,9 +1,9 @@
 /*
- * Author : Bassam Mahmoud
+ * Author : Bassam_Mahmoud_
  * Layer  : HAL
- * SWC    : LEDMRX
- * Version: 1.0
- * Created: NOV/23/2023
+ * SWC	  : LEDMRX
+ * Version: 1.1
+ * Created: JULY/31/2024
  */
 
 #include "STD_TYPES.h"
@@ -16,27 +16,10 @@
 #include "LEDMRX_config.h"
 #include "LEDMRX_private.h"
 
-PIN_t LEDMRX_ROWS[] = LEDMRX_ROWS_PINS;
-PIN_t LEDMRX_COLS[] = LEDMRX_COLS_PINS;
+static u8 LEDMRX_ROWS[LEDMRX_ROWS_NUM][2] = LEDMRX_ROWS_PINS;
+static u8 LEDMRX_COLS[LEDMRX_COLS_NUM][2] = LEDMRX_COLS_PINS;
 
-void LEDMRX_voidInit(void)
-{
-	u8 Local_u8Iterator;
-
-	/* INITIATE LED MATRIX ROWS PINS MODE */
-	for(Local_u8Iterator = 0; Local_u8Iterator < LEDMRX_ROWS_NUM; Local_u8Iterator++)
-	{
-		GPIO_u8SetPinMode(LEDMRX_ROWS[Local_u8Iterator].Port, LEDMRX_ROWS[Local_u8Iterator].Pin,GPIO_PIN_OUTPUT_PP_10MHZ);
-	}
-
-	/* INITIATE LED MATRIX COLUMNS PINS MODE */
-	for(Local_u8Iterator = 0; Local_u8Iterator < LEDMRX_COLS_NUM; Local_u8Iterator++)
-	{
-		GPIO_u8SetPinMode(LEDMRX_COLS[Local_u8Iterator].Port, LEDMRX_COLS[Local_u8Iterator].Pin,GPIO_PIN_OUTPUT_PP_10MHZ);
-	}
-}
-
-void LEDMRX_voidSendChar(u8* Copy_Pu8CharArr)
+void LEDMRX_voidSendChar(char* Copy_Pu8Char)
 {
 	u8 Local_u8Iterator;
 
@@ -44,26 +27,39 @@ void LEDMRX_voidSendChar(u8* Copy_Pu8CharArr)
 	{
 		LEDMRX_voidClear();
 
-		/* SEND ROWS VALUE FOR ONE COLUMN */
-		LEDMRX_voidSendColumn(~Copy_Pu8CharArr[Local_u8Iterator]);
+		/* SEND COLUMN VALUE FOR EACH ROW */
+		LEDMRX_voidSendRow(Copy_Pu8Char[Local_u8Iterator]);
 
 		/* SET THE REQUIRED COLUMN */
-		GPIO_u8SetPinValue(LEDMRX_COLS[Local_u8Iterator].Port, LEDMRX_COLS[Local_u8Iterator].Pin, GPIO_PIN_HIGH);
+		GPIO_u8SetPinValue(LEDMRX_ROWS[Local_u8Iterator][PORT], LEDMRX_ROWS[Local_u8Iterator][PIN], GPIO_PIN_LOW);
 
 		/* SET DELAY FOR 2.5MS USING SYSTICK */
-		STK_voidStartCountSynch(1000000/( LEDMRX_COLS_NUM * LEDMRX_FRAM_FRQ ));
+		STK_u8StartCountSynch(1000000/( LEDMRX_COLS_NUM * LEDMRX_FRAM_FRQ ));
+
 	}
 }
 
-void LEDMRX_voidSendString(u8* Copy_u8Data, u8 Copy_u8SizeOfData)
+void LEDMRX_voidSendString(const char* Copy_Pu8String)
 {
-	u8 Local_u8Iterator, Local_u8BusyWait;
+	u8 Local_u8CharIndex, Local_u8RowIndex, Local_u8BitIndex, Local_u8BusyWait;
 
-	for(Local_u8Iterator=0; Local_u8Iterator<(Copy_u8SizeOfData-7); Local_u8Iterator++)
+	char Local_u8CharToSend[8] = {0};
+
+	for(Local_u8CharIndex = 0; Copy_Pu8String[Local_u8CharIndex] != '\0'; Local_u8CharIndex++)
 	{
-		for(Local_u8BusyWait=0; Local_u8BusyWait<= LEDMRX_SPEED; Local_u8BusyWait++)
+		for(Local_u8BitIndex = 0; Local_u8BitIndex < 8; Local_u8BitIndex++)
 		{
-			LEDMRX_voidSendChar(&Copy_u8Data[Local_u8Iterator]);
+			/* GET Character */
+			for(Local_u8RowIndex = 0; Local_u8RowIndex < 8; Local_u8RowIndex++)
+			{
+				Local_u8CharToSend[Local_u8RowIndex] = (Local_u8CharToSend[Local_u8RowIndex]>>1) & 0b01111111;
+				Local_u8CharToSend[Local_u8RowIndex]|= (GET_BIT(LEDMRX_Alpha[Copy_Pu8String[Local_u8CharIndex]-0x20][Local_u8RowIndex],Local_u8BitIndex)<<7);
+			}
+
+			for(Local_u8BusyWait = 0; Local_u8BusyWait <= LEDMRX_SPEED; Local_u8BusyWait++) {
+
+				LEDMRX_voidSendChar(Local_u8CharToSend);
+			}
 		}
 	}
 }
@@ -73,18 +69,18 @@ void LEDMRX_voidClear()
 	u8 Local_u8Iterator;
 
 	/* SET EVERY COLOMN BIN TO LOW */
-	for(Local_u8Iterator = 0; Local_u8Iterator < LEDMRX_COLS_NUM; Local_u8Iterator++)
+	for(Local_u8Iterator = 0; Local_u8Iterator < LEDMRX_ROWS_NUM; Local_u8Iterator++)
 	{
-		GPIO_u8SetPinValue(LEDMRX_COLS[Local_u8Iterator].Port, LEDMRX_COLS[Local_u8Iterator].Pin, GPIO_PIN_LOW);
+		GPIO_u8SetPinValue(LEDMRX_ROWS[Local_u8Iterator][PORT], LEDMRX_ROWS[Local_u8Iterator][PIN], GPIO_PIN_HIGH);
 	}
 }
 
-void LEDMRX_voidSendColumn(u8 Copy_u8Column)
+void LEDMRX_voidSendRow(u8 Copy_u8Column)
 {
 	u8 Local_u8Iterator;
 
-	for(Local_u8Iterator = 0; Local_u8Iterator < LEDMRX_ROWS_NUM; Local_u8Iterator++)
+	for(Local_u8Iterator = 0; Local_u8Iterator < LEDMRX_COLS_NUM; Local_u8Iterator++)
 	{
-		GPIO_u8SetPinValue(LEDMRX_ROWS[Local_u8Iterator].Port, LEDMRX_ROWS[Local_u8Iterator].Pin, GET_BIT(Copy_u8Column,Local_u8Iterator));
+		GPIO_u8SetPinValue(LEDMRX_COLS[Local_u8Iterator][PORT], LEDMRX_COLS[Local_u8Iterator][PIN], GET_BIT(Copy_u8Column,Local_u8Iterator));
 	}
 }

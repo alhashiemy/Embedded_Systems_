@@ -1,9 +1,9 @@
 /*
- * Author : Bassam Mahmoud
+ * Author : Bassam_Mahmoud_
  * Layer  : HAL
- * SWC    : LEDMRX
- * Version: 1.0
- * Created: NOV/23/2023
+ * SWC	  : LEDMRX
+ * Version: 1.1
+ * Created: JULY/31/2024
  */
 
 #ifndef LEDMRX_INTERFACE_H_
@@ -14,8 +14,8 @@
 
 void LEDMRX_voidInit(void);
 
-void LEDMRX_voidSendChar(u8* Copy_Pu8CharArr);
+void LEDMRX_voidSendChar(char* Copy_Pu8Char);
 
-void LEDMRX_voidSendString(u8* Copy_u8Data, u8 Copy_u8SizeOfData);
+void LEDMRX_voidSendString(const char* Copy_Pu8String);
 
 #endif
